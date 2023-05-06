@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "form-data": "^4.0.0",
+    "node-fetch": "^3.3.1"
+  },
+  "name": "qris-mutasi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Hizrian",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
