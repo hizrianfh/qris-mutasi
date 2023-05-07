@@ -1,16 +1,28 @@
 {
-  "type": "module",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "form-data": "^4.0.0",
-    "node-fetch": "^3.3.1"
+    "cheerio": "^1.0.0-rc.12"
   },
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "clean": true
+  },
+  "scripts": {
+    "build": "tsup --format cjs,esm --dts"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "module": "dist/index.ejs",
+  "types": "dist/index.d.ts",
   "name": "qris-mutasi",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Hizrian",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.1.0",
+    "tsup": "^6.7.0",
     "typescript": "^5.0.4"
   }
 }
