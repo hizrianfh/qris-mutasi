@@ -3,11 +3,14 @@
     "cheerio": "^1.0.0-rc.12"
   },
   "tsup": {
-    "entry": ["src/index.ts"],
+    "entry": [
+      "src/index.ts"
+    ],
     "clean": true
   },
   "scripts": {
-    "build": "tsup --format cjs,esm --dts"
+    "build": "tsup --format cjs,esm --dts",
+    "publish": "yarn build & yarn version &  npm publish"
   },
   "files": [
     "dist"
@@ -17,7 +20,7 @@
   "module": "dist/index.ejs",
   "types": "dist/index.d.ts",
   "name": "qris-mutasi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Hizrian",
   "license": "MIT",
   "devDependencies": {

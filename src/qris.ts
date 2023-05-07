@@ -19,29 +19,45 @@ export class Qris {
     const newDate = new Date(currentDate.getTime() + 7 * 60 * 60 * 1000);
     const today = newDate.toISOString().split("T")[0];
 
-    from_date = from_date ?? today;
-    to_date = to_date ?? today;
+    from_date = from_date || today;
+    to_date = to_date || today;
 
     if (
       !/^\d{4,}-\d{2,}-\d{2,}$/.test(from_date) ||
       !/^\d{4,}-\d{2,}-\d{2,}$/.test(to_date)
-    )
+    ) {
       throw new Error(
         `Harap input tanggal dengan format yang benar.\neg: ${today}`
       );
+    }
 
     let tries = 0;
-    while (true) {
+    const maxTries = 3;
+    const timeout = 3000; // in milliseconds
+
+    while (tries < maxTries) {
       const response = await this.request(
         "https://merchant.qris.id/m/kontenr.php?idir=pages/historytrx.php",
         this.filter_data(from_date, to_date, nominal)
       );
-      if (!response) throw new Error();
+
+      if (!response) {
+        throw new Error("Tidak dapat memuat data mutasi.");
+      }
+
       const result = await response.text();
+
       if (!/logout/.test(result)) {
-        tries += 1;
-        if (tries > 3) throw new Error("Gagal login setelah 3x percobaan");
-        await this.login();
+        tries++;
+
+        try {
+          await this.login();
+        } catch (error) {
+          console.log(error);
+          console.log(`Percobaan login ${tries} gagal`);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, timeout)); // wait for a short time before retrying
       } else {
         const $ = cheerio.load(result);
         const history: any[] = [];
@@ -76,6 +92,8 @@ export class Qris {
         return data;
       }
     }
+
+    throw new Error("Gagal login setelah 3x percobaan");
   }
 
   private async request(url: string, data: FormData) {
@@ -116,7 +134,7 @@ export class Qris {
       return response;
     } catch (error: any) {
       if (error.name === "AbortError") {
-        throw new Error('Server Qris berkendala, coba lagi nanti.')
+        throw new Error("Server Qris berkendala, coba lagi nanti");
       }
     }
   }
@@ -127,30 +145,27 @@ export class Qris {
       this.login_data()
     );
 
-    if (!response) throw new Error();
+    if (!response) {
+      throw new Error("Tidak ada response dari server");
+    }
 
     const result = await response.text();
 
     if (!/historytrx/.test(result)) {
       this.cookie = "";
-      throw new Error(
-        "Tidak dapat login, Harap cek kembali email & password anda"
+      throw new AuthenticationError(
+        "Tidak dapat login, Cek kembali email & password"
       );
     }
 
     const cookieHeader = response.headers.get("set-cookie");
 
     if (!cookieHeader)
-      throw new Error(
-        "Tidak dapat login, Harap cek kembali email & password anda"
-      );
+      throw new LoginError("Tidak ada respons cookie dari server");
 
     const cookie = getSessionId(cookieHeader);
 
-    if (!cookie)
-      throw new Error(
-        "Tidak dapat login, Harap cek kembali email & password anda"
-      );
+    if (!cookie) throw new LoginError("SessionId tidak ada");
 
     this.cookie = cookie;
 
@@ -173,6 +188,20 @@ export class Qris {
     data.append("searchtxt", nominal);
     data.append("Filter", "Filter");
     return data;
+  }
+}
+
+class LoginError extends Error {
+  constructor(message: any) {
+    super(message);
+    this.name = "LoginError";
+  }
+}
+
+class AuthenticationError extends Error {
+  constructor(message: any) {
+    super(message);
+    this.name = "AuthenticationError";
   }
 }
 

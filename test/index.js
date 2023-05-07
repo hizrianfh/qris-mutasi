@@ -7,6 +7,6 @@ import { Qris } from "qris-mutasi";
 
 (async () => {
   const qris = new Qris(process.env.EMAIL, process.env.PASSWORD);
-  const mutasi = await qris.mutasi();
+  const mutasi = await qris.mutasi('', '2023-05-05', '2023-05-06');
   console.log(mutasi);
 })();
