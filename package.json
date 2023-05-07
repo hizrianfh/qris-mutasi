@@ -10,17 +10,17 @@
   },
   "scripts": {
     "build": "tsup --format cjs,esm --dts",
-    "publish": "yarn build & yarn version &  npm publish"
+    "prepublish": "yarn build"
   },
   "files": [
     "dist"
   ],
   "type": "commonjs",
   "main": "dist/index.js",
-  "module": "dist/index.ejs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "name": "qris-mutasi",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "author": "Hizrian",
   "license": "MIT",
   "devDependencies": {
