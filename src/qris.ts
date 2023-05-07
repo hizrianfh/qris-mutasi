@@ -1,9 +1,9 @@
 import * as cheerio from "cheerio";
 
 export class Qris {
-  user: string;
-  pass: string;
-  cookie: string;
+  private user: string;
+  private pass: string;
+  private cookie: string;
   constructor(user: string, pass: string) {
     this.user = user;
     this.pass = pass;
@@ -78,7 +78,7 @@ export class Qris {
     }
   }
 
-  async request(url: string, data: FormData) {
+  private async request(url: string, data: FormData) {
     const options = {
       timeout: 8000,
     };
@@ -121,7 +121,7 @@ export class Qris {
     }
   }
 
-  async login() {
+  private async login() {
     const response = await this.request(
       "https://merchant.qris.id/m/login.php?pgv=go",
       this.login_data()
@@ -157,7 +157,7 @@ export class Qris {
     return true;
   }
 
-  login_data() {
+  private login_data() {
     const data = new FormData();
     data.append("username", this.user);
     data.append("password", this.pass);
@@ -165,7 +165,7 @@ export class Qris {
     return data;
   }
 
-  filter_data(from_date: string, to_date: string, nominal = "") {
+  private filter_data(from_date: string, to_date: string, nominal = "") {
     const data = new FormData();
     data.append("datexbegin", from_date);
     data.append("datexend", to_date);
